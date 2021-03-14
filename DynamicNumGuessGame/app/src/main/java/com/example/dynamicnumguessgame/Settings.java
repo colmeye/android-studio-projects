@@ -15,6 +15,17 @@ import android.widget.Toast;
 
 public class Settings extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
+    private Spinner spinnerBtnCount;
+    private Spinner spinnerSeconds;
+    private Spinner spinnerRange;
+
+    private RadioGroup radioGroup;
+    private RadioButton radioButton;
+
+    private String buttonAmountFinal;
+    private String countDownTimeFinal;
+    private String numberRangeFinal;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,31 +41,61 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                 openActivityGame();
             }
         });
-
     }
 
     public void openActivityGame() {
+
+        radioGroup = findViewById(R.id.radioGroup);
+        int radioId = radioGroup.getCheckedRadioButtonId();
+        radioButton = findViewById(radioId);
+
+        Toast.makeText(this, "Starting " + radioButton.getText() + " Game", Toast.LENGTH_SHORT).show();
+
+        if ( radioButton.getText().equals("Easy") ) {
+            buttonAmountFinal = "4";
+            countDownTimeFinal = "20";
+            numberRangeFinal = "10";
+        }
+        else if ( radioButton.getText().equals("Medium") ) {
+            buttonAmountFinal = "6";
+            countDownTimeFinal = "10";
+            numberRangeFinal = "20";
+        }
+        else if ( radioButton.getText().equals("Hard") ) {
+            buttonAmountFinal = "8";
+            countDownTimeFinal = "5";
+            numberRangeFinal = "30";
+        }
+        else {
+            buttonAmountFinal = spinnerBtnCount.getSelectedItem().toString();
+            countDownTimeFinal = spinnerSeconds.getSelectedItem().toString();
+            numberRangeFinal = spinnerRange.getSelectedItem().toString();
+        }
+
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("buttonAmount", buttonAmountFinal);
+        intent.putExtra("countDownTime", countDownTimeFinal);
+        intent.putExtra("numberRange", numberRangeFinal);
         startActivity(intent);
     }
 
     public void setupSpinners() {
         // Setup Button Count Spinner
-        Spinner spinnerBtnCount = findViewById(R.id.spinnerBtnCount);
+        spinnerBtnCount = findViewById(R.id.spinnerBtnCount);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.buttonAmounts, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerBtnCount.setAdapter(adapter);
         spinnerBtnCount.setOnItemSelectedListener(this);
 
         // Spinner Seconds Countdown
-        Spinner spinnerSeconds = findViewById(R.id.spinnerSeconds);
+        spinnerSeconds = findViewById(R.id.spinnerSeconds);
         ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this, R.array.countdownTimes, android.R.layout.simple_spinner_item);
         adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSeconds.setAdapter(adapter1);
         spinnerSeconds.setOnItemSelectedListener(this);
 
         // Spinner Number Range
-        Spinner spinnerRange = findViewById(R.id.spinnerRange);
+        spinnerRange = findViewById(R.id.spinnerRange);
         ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this, R.array.numberRanges, android.R.layout.simple_spinner_item);
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerRange.setAdapter(adapter2);

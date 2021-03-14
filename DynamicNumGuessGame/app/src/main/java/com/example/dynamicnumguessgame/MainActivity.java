@@ -16,7 +16,7 @@ import java.util.Timer;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int num1, num2, num3, num4;
+    int[] numArray = new int[5];
     private int score;
     private int rightAnswers;
     private int wrongAnswers;
@@ -24,56 +24,86 @@ public class MainActivity extends AppCompatActivity {
     //private TableLayout table = (TableLayout) findViewById(R.id.tableButtons);
     //Button[] buttonArray = new Button[6];
 
+    // Intent vars
+    private int buttonAmount;
+    private int countDownTime;
+    private int numberRange;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // Get intent values
+        Intent in = getIntent();
+        buttonAmount = Integer.parseInt(in.getStringExtra("buttonAmount"));
+        countDownTime = Integer.parseInt(in.getStringExtra("countDownTime"));
+        numberRange = Integer.parseInt(in.getStringExtra("numberRange"));
+
+        roll();
+        startTimer();
+
+        // End game button
+        Button btnEnd = findViewById(R.id.btnEnd);
+        btnEnd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View v) {
+                timer.cancel();
+                openActivityResults();
+            }
+        });
+    }
 
 
     private void roll() {
         // Set new random numbers
         Random r = new Random();
-        num1 = r.nextInt(20);
-        num2 = r.nextInt( 20 );
-        num3 = r.nextInt(20);
-        num4 = r.nextInt( 20 );
+
+        // Assign random numbers
+        for (int i = 0; i < buttonAmount; i++)
+        {
+            numArray[i] = r.nextInt(numberRange);
+        }
 
         // Change the text in the buttons
         Button btnOne = findViewById(R.id.btnOne);
-        btnOne.setText("" + num1);
+        btnOne.setText("" + numArray[0]);
 
         Button btnTwo = findViewById(R.id.btnTwo);
-        btnTwo.setText("" + num2);
+        btnTwo.setText("" + numArray[1]);
 
         Button btnThree = findViewById(R.id.btnThree);
-        btnThree.setText("" + num3);
+        btnThree.setText("" + numArray[2]);
 
         Button btnFour = findViewById(R.id.btnFour);
-        btnFour.setText("" + num4);
+        btnFour.setText("" + numArray[3]);
     }
 
-    public void clickBtnOne(View v) {
-        check(num1);
-    }
+    public void clickBtnOne(View v) { check(numArray[0]); }
 
     public void clickBtnTwo(View v) {
-        check(num2);
+        check(numArray[1]);
     }
 
     public void clickBtnThree(View v) {
-        check(num3);
+        check(numArray[2]);
     }
 
     public void clickBtnFour(View v) {
-        check(num4);
+        check(numArray[3]);
     }
 
     private void check(int numToCheck)
     {
-        double average = (num1 + num2 + num3 + num4) / 4.0;
+        double average = (numArray[0] + numArray[1] + numArray[2] + numArray[3]) / 4.0;
         double numToCheckDist = Math.abs(average - numToCheck);
 
         // Find how close each number is to the average
-        double num1Dist = Math.abs(average - num1);
-        double num2Dist = Math.abs(average - num2);
-        double num3Dist = Math.abs(average - num3);
-        double num4Dist = Math.abs(average - num4);
+        double num1Dist = Math.abs(average - numArray[0]);
+        double num2Dist = Math.abs(average - numArray[1]);
+        double num3Dist = Math.abs(average - numArray[2]);
+        double num4Dist = Math.abs(average - numArray[3]);
 
         // Find the closest number to the average
         double smallestDistance = Math.min( Math.min(num1Dist, num2Dist), Math.min(num3Dist, num4Dist));
@@ -109,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
 
         TextView txtTime = findViewById(R.id.txtTime);
 
-        timer = new CountDownTimer(11000, 1000) {
+        timer = new CountDownTimer( (countDownTime+1) * 1000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 txtTime.setText("Time: " + millisUntilFinished / 1000);
@@ -119,13 +149,13 @@ public class MainActivity extends AppCompatActivity {
                 timerPenalty();
             }
         }.start();
-
     }
 
     private void timerPenalty() {
         // Decrease score
         if (score > 0) {
             score--;
+            wrongAnswers++;
         }
         TextView txtScore = findViewById(R.id.txtScore);
         txtScore.setText("Score: " + score);
@@ -149,27 +179,6 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("right", Integer.toString(rightAnswers) );
         intent.putExtra("wrong", Integer.toString(wrongAnswers) );
         startActivity(intent);
-    }
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        roll();
-        startTimer();
-
-        // End game button
-        Button btnEnd = findViewById(R.id.btnEnd);
-        btnEnd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick (View v) {
-                timer.cancel();
-                openActivityResults();
-            }
-        });
-
     }
 
 
