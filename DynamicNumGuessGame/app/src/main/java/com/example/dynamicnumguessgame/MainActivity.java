@@ -11,18 +11,23 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 
 public class MainActivity extends AppCompatActivity {
 
-    int[] numArray = new int[5];
+    int[] numArray;
     private int score;
     private int rightAnswers;
     private int wrongAnswers;
     private CountDownTimer timer;
-    //private TableLayout table = (TableLayout) findViewById(R.id.tableButtons);
-    //Button[] buttonArray = new Button[6];
+
+    // Buttons
+    private TableLayout table;
+    private Button[] buttonArray;
 
     // Intent vars
     private int buttonAmount;
@@ -41,6 +46,18 @@ public class MainActivity extends AppCompatActivity {
         countDownTime = Integer.parseInt(in.getStringExtra("countDownTime"));
         numberRange = Integer.parseInt(in.getStringExtra("numberRange"));
 
+        // Get table
+        table = (TableLayout) findViewById(R.id.tableButtons);
+        buttonArray = new Button[buttonAmount];
+        numArray = new int[buttonAmount];
+
+        for (int j = 0; j < buttonAmount; j++) {
+            buttonArray[j] = new Button(this);
+            buttonArray[j].setText("Sample");
+            table.addView( buttonArray[j] );
+        }
+
+        // Roll for new nums and start timer
         roll();
         startTimer();
 
@@ -53,6 +70,19 @@ public class MainActivity extends AppCompatActivity {
                 openActivityResults();
             }
         });
+
+        // Click any button listener
+        for (int q = 0; q < buttonAmount; q++) {
+
+            int finalQ = q;
+            buttonArray[q].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    check(numArray[finalQ]);
+                }
+            });
+        }
+
     }
 
 
@@ -64,49 +94,31 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < buttonAmount; i++)
         {
             numArray[i] = r.nextInt(numberRange);
+            buttonArray[i].setText("" + numArray[i]);
         }
-
-        // Change the text in the buttons
-        Button btnOne = findViewById(R.id.btnOne);
-        btnOne.setText("" + numArray[0]);
-
-        Button btnTwo = findViewById(R.id.btnTwo);
-        btnTwo.setText("" + numArray[1]);
-
-        Button btnThree = findViewById(R.id.btnThree);
-        btnThree.setText("" + numArray[2]);
-
-        Button btnFour = findViewById(R.id.btnFour);
-        btnFour.setText("" + numArray[3]);
     }
 
-    public void clickBtnOne(View v) { check(numArray[0]); }
-
-    public void clickBtnTwo(View v) {
-        check(numArray[1]);
-    }
-
-    public void clickBtnThree(View v) {
-        check(numArray[2]);
-    }
-
-    public void clickBtnFour(View v) {
-        check(numArray[3]);
-    }
 
     private void check(int numToCheck)
     {
-        double average = (numArray[0] + numArray[1] + numArray[2] + numArray[3]) / 4.0;
+        // Determine the average
+        double sum = 0;
+        for (int b = 0; b < buttonAmount; b++) {
+            sum += numArray[b];
+        }
+        double average = sum / buttonAmount;
+
+        // Determine the distance from the number selected
         double numToCheckDist = Math.abs(average - numToCheck);
 
         // Find how close each number is to the average
-        double num1Dist = Math.abs(average - numArray[0]);
-        double num2Dist = Math.abs(average - numArray[1]);
-        double num3Dist = Math.abs(average - numArray[2]);
-        double num4Dist = Math.abs(average - numArray[3]);
+        double numDist[] = new double[buttonAmount];
+        for (int f = 0; f < buttonAmount; f++) {
+            numDist[f] = Math.abs(average - numArray[f]);
+        }
 
         // Find the closest number to the average
-        double smallestDistance = Math.min( Math.min(num1Dist, num2Dist), Math.min(num3Dist, num4Dist));
+        double smallestDistance = findMin(numDist);
 
         // Increase or decrease the score if selected number is also the closest
         if (smallestDistance == numToCheckDist) {
@@ -132,6 +144,10 @@ public class MainActivity extends AppCompatActivity {
         restartTimer();
 
         roll();
+    }
+
+    double findMin(double[] input) {
+        return Arrays.stream(input).min().getAsDouble();
     }
 
 

@@ -57,12 +57,12 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
             numberRangeFinal = "10";
         }
         else if ( radioButton.getText().equals("Medium") ) {
-            buttonAmountFinal = "6";
+            buttonAmountFinal = "5";
             countDownTimeFinal = "10";
             numberRangeFinal = "20";
         }
         else if ( radioButton.getText().equals("Hard") ) {
-            buttonAmountFinal = "8";
+            buttonAmountFinal = "6";
             countDownTimeFinal = "5";
             numberRangeFinal = "30";
         }
