@@ -1,0 +1,74 @@
+package com.example.dynamicnumguessgame;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
+import android.widget.Toast;
+
+public class Settings extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
+
+        setupSpinners();
+
+        // Start game button
+        Button btnPlay = findViewById(R.id.btnPlay);
+        btnPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View v) {
+                openActivityGame();
+            }
+        });
+
+    }
+
+    public void openActivityGame() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    public void setupSpinners() {
+        // Setup Button Count Spinner
+        Spinner spinnerBtnCount = findViewById(R.id.spinnerBtnCount);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.buttonAmounts, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerBtnCount.setAdapter(adapter);
+        spinnerBtnCount.setOnItemSelectedListener(this);
+
+        // Spinner Seconds Countdown
+        Spinner spinnerSeconds = findViewById(R.id.spinnerSeconds);
+        ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this, R.array.countdownTimes, android.R.layout.simple_spinner_item);
+        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerSeconds.setAdapter(adapter1);
+        spinnerSeconds.setOnItemSelectedListener(this);
+
+        // Spinner Number Range
+        Spinner spinnerRange = findViewById(R.id.spinnerRange);
+        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this, R.array.numberRanges, android.R.layout.simple_spinner_item);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerRange.setAdapter(adapter2);
+        spinnerRange.setOnItemSelectedListener(this);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        //String text = parent.getItemAtPosition(position).toString();
+        //Toast.makeText(parent.getContext(), text + " selected", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+}

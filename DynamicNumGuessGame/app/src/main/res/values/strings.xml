@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">DynamicNumGuessGame</string>
+
+    <string-array name="buttonAmounts">
+        <item>4</item>
+        <item>6</item>
+        <item>8</item>
+    </string-array>
+
+    <string-array name="countdownTimes">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>20</item>
+    </string-array>
+
+    <string-array name="numberRanges">
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+    </string-array>
+</resources>
