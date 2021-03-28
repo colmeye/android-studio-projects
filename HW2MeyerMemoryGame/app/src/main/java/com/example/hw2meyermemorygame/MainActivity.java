@@ -2,12 +2,14 @@ package com.example.hw2meyermemorygame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 
 import java.util.Random;
 
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     // Card clicks
     private Button selectedCardOne = null;
     private Button selectedCardTwo = null;
+    private int flips = 0;
 
     // Emojis
     private int[] emojiUnicodes = new int[]{0x1F34C, 0x1F34D, 0x1F354, 0x1F355, 0x1F357, 0x1F358, 0x1F35F};
@@ -42,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
         tl = findViewById(R.id.tableOfCards);
         tableRowCount = 3;
         tableColCount = 4;
+
+        // Text setup
+        TextView flipsText = findViewById(R.id.textViewFlips);
+        flipsText.setText("Flips: " + flips);
 
         // Card setup
         cardArray = new Button[tableRowCount][tableColCount];
@@ -64,6 +71,11 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
+                        // Increase flips
+                        flips++;
+                        TextView flipsText = findViewById(R.id.textViewFlips);
+                        flipsText.setText("Flips: " + flips);
+
                         // Select the card
                         if (selectedCardOne == null) {
                             // no first card, so set first card
@@ -84,6 +96,16 @@ public class MainActivity extends AppCompatActivity {
                                 selectedCardOne.setEnabled(false);
                                 selectedCardTwo.setEnabled(false);
                             }
+                            else {
+                                // Not a match, make red
+                                selectedCardOne.setBackgroundColor(Color.RED);
+                                selectedCardTwo.setBackgroundColor(Color.RED);
+                            }
+
+                            // Check if the game is finished!
+                            if (checkFinished()) {
+                                openActivityScore();
+                            }
                         }
                         else {
                             // Reset background colors
@@ -97,17 +119,13 @@ public class MainActivity extends AppCompatActivity {
                             selectedCardOne.setBackgroundColor(Color.YELLOW);
                         }
 
-
-
                     }
                 });
             }
         }
-
     }
 
     private boolean checkMatch(Button cardOne, Button cardTwo) {
-
         for (int i = 0; i < matchCount; i++) {
 
             if (matchArray[i][0].equals(cardOne) && matchArray[i][1].equals(cardTwo)) {
@@ -116,11 +134,25 @@ public class MainActivity extends AppCompatActivity {
             else if (matchArray[i][1].equals(cardOne) && matchArray[i][0].equals(cardTwo)) {
                 return true;
             }
-
         }
-
         return false;
+    }
 
+    private boolean checkFinished() {
+        // If a card is enabled, the game isn't over
+        for (int i = 0; i < tableRowCount; i++) {
+            for (int q = 0; q < tableColCount; q++) {
+                if (cardArray[i][q].isEnabled()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void openActivityScore() {
+        Intent i = new Intent(this, ScoreActivity.class);
+        startActivity(i);
     }
 
 
