@@ -13,6 +13,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private int flips = 0;
 
     // Emojis
-    private int[] emojiUnicodes = new int[]{0x1F34C, 0x1F34D, 0x1F354, 0x1F355, 0x1F357, 0x1F358, 0x1F35F};
+    private int[] emojiUnicodes = new int[]{0x1F347, 0x1F348, 0x1F349, 0x1F34A, 0x1F34C, 0x1F34D, 0x1F34E, 0x1F352, 0x1F353, 0x1F354, 0x1F355, 0x1F356, 0x1F357, 0x1F358, 0x1F359, 0x1F35A, 0x1F35B, 0x1F35C, 0x1F35D, 0x1F35E, 0x1F35F};
     private String getEmojiByUnicode(int unicode){
         return new String(Character.toChars(unicode));
     }
@@ -41,6 +42,11 @@ public class MainActivity extends AppCompatActivity {
     private CountDownTimer timer;
     private int countDownTime = 5;
 
+    // Stopwatch
+    private long timeElapsed;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,8 +54,11 @@ public class MainActivity extends AppCompatActivity {
 
         // Table setup
         tl = findViewById(R.id.tableOfCards);
-        tableRowCount = 3;
+        tableRowCount = ThreadLocalRandom.current().nextInt(3, 10);
         tableColCount = 4;
+        while ( (tableRowCount*tableColCount) % 2 != 0) {
+            tableRowCount = ThreadLocalRandom.current().nextInt(4, 10);
+        }
 
         // Text setup
         TextView flipsText = findViewById(R.id.textViewFlips);
@@ -73,9 +82,15 @@ public class MainActivity extends AppCompatActivity {
             }
             public void onFinish() {
                 hideCards();
+
+                // Start stopwatch
+                long start = System.nanoTime();
+                long finish = System.nanoTime();
+                timeElapsed = finish - start;
             }
         }.start();
     }
+
 
     private void hideCards() {
         // Hide enabled cards
@@ -204,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
     public void openActivityScore() {
         Intent i = new Intent(this, ScoreActivity.class);
         i.putExtra("flips", Integer.toString(flips));
+        i.putExtra("time", Long.toString(timeElapsed/1000));
         startActivity(i);
     }
 
