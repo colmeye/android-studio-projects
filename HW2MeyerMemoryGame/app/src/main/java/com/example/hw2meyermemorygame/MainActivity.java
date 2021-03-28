@@ -203,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void openActivityScore() {
         Intent i = new Intent(this, ScoreActivity.class);
+        i.putExtra("flips", Integer.toString(flips));
         startActivity(i);
     }
 
