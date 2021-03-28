@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
@@ -36,6 +37,10 @@ public class MainActivity extends AppCompatActivity {
         return new String(Character.toChars(unicode));
     }
 
+    // Timer
+    private CountDownTimer timer;
+    private int countDownTime = 5;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +61,33 @@ public class MainActivity extends AppCompatActivity {
 
         // Click listener
         cardClickListener();
+        startTimer();
     }
+
+    private void startTimer() {
+        TextView txtTime = findViewById(R.id.textViewTime);
+
+        timer = new CountDownTimer( (countDownTime+1) * 1000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                txtTime.setText("Time: " + millisUntilFinished / 1000);
+            }
+            public void onFinish() {
+                hideCards();
+            }
+        }.start();
+    }
+
+    private void hideCards() {
+        // Hide enabled cards
+        for (int i = 0; i < tableRowCount; i++) {
+            for (int q = 0; q < tableColCount; q++) {
+                if (cardArray[i][q].isEnabled()) {
+                    cardArray[i][q].setText(null);
+                }
+            }
+        }
+    }
+
 
     private void cardClickListener() {
 
@@ -76,17 +107,21 @@ public class MainActivity extends AppCompatActivity {
                         TextView flipsText = findViewById(R.id.textViewFlips);
                         flipsText.setText("Flips: " + flips);
 
+
+
                         // Select the card
                         if (selectedCardOne == null) {
                             // no first card, so set first card
                             selectedCardOne = cardArray[finalI][finalQ];
                             selectedCardOne.setBackgroundColor(Color.YELLOW);
+                            showCard(selectedCardOne);
                         }
                         else if (selectedCardTwo == null) {
 
                             // no second card, so set second card
                             selectedCardTwo = cardArray[finalI][finalQ];
                             selectedCardTwo.setBackgroundColor(Color.YELLOW);
+                            showCard(selectedCardTwo);
 
                             // Check if a match!
                             if (checkMatch(selectedCardOne, selectedCardTwo)) {
@@ -112,16 +147,32 @@ public class MainActivity extends AppCompatActivity {
                             selectedCardOne.setBackgroundColor(Color.LTGRAY);
                             selectedCardTwo.setBackgroundColor(Color.LTGRAY);
                             // Clear selection
+                            hideCards();
                             selectedCardOne = null;
                             selectedCardTwo = null;
                             // Select new card
                             selectedCardOne = cardArray[finalI][finalQ];
                             selectedCardOne.setBackgroundColor(Color.YELLOW);
+                            showCard(selectedCardOne);
                         }
 
                     }
                 });
             }
+        }
+    }
+
+    private void showCard(Button card) {
+        // Show the clicked on card!
+        for (int i = 0; i < matchCount; i++) {
+
+            if (card.equals(matchArray[i][0])) {
+                matchArray[i][0].setText( getEmojiByUnicode( emojiUnicodes[i] ) );
+            }
+            if (card.equals(matchArray[i][1])) {
+                matchArray[i][1].setText( getEmojiByUnicode( emojiUnicodes[i] ) );
+            }
+
         }
     }
 
@@ -193,11 +244,11 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        Button[][] shuffledArray = shuffle(matchArray);
+        matchArray = shuffle(matchArray);
 
         for (int i = 0; i < matchCount; i++) {
-            shuffledArray[i][0].setText( getEmojiByUnicode( emojiUnicodes[i] ) );
-            shuffledArray[i][1].setText( getEmojiByUnicode( emojiUnicodes[i] ) );
+            matchArray[i][0].setText( getEmojiByUnicode( emojiUnicodes[i] ) );
+            matchArray[i][1].setText( getEmojiByUnicode( emojiUnicodes[i] ) );
         }
 
 
