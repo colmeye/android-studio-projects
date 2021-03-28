@@ -2,7 +2,9 @@ package com.example.hw2meyermemorygame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -19,6 +21,11 @@ public class MainActivity extends AppCompatActivity {
     // Card setup
     private Button[][] cardArray;
     private Button[][] matchArray;
+    private int matchCount;
+
+    // Card clicks
+    private Button selectedCardOne = null;
+    private Button selectedCardTwo = null;
 
     // Emojis
     private int[] emojiUnicodes = new int[]{0x1F34C, 0x1F34D, 0x1F354, 0x1F355, 0x1F357, 0x1F358, 0x1F35F};
@@ -39,12 +46,88 @@ public class MainActivity extends AppCompatActivity {
         // Card setup
         cardArray = new Button[tableRowCount][tableColCount];
         generateCards();
+
+        // Click listener
+        cardClickListener();
     }
+
+    private void cardClickListener() {
+
+        // Click any card listener
+        for (int i = 0; i < tableRowCount; i++) {
+            for (int q = 0; q < tableColCount; q++) {
+
+                int finalI = i;
+                int finalQ = q;
+
+                cardArray[i][q].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        // Select the card
+                        if (selectedCardOne == null) {
+                            // no first card, so set first card
+                            selectedCardOne = cardArray[finalI][finalQ];
+                            selectedCardOne.setBackgroundColor(Color.YELLOW);
+                        }
+                        else if (selectedCardTwo == null) {
+
+                            // no second card, so set second card
+                            selectedCardTwo = cardArray[finalI][finalQ];
+                            selectedCardTwo.setBackgroundColor(Color.YELLOW);
+
+                            // Check if a match!
+                            if (checkMatch(selectedCardOne, selectedCardTwo)) {
+                                // They are a match, so disable
+                                selectedCardOne.setBackgroundColor(Color.GREEN);
+                                selectedCardTwo.setBackgroundColor(Color.GREEN);
+                                selectedCardOne.setEnabled(false);
+                                selectedCardTwo.setEnabled(false);
+                            }
+                        }
+                        else {
+                            // Reset background colors
+                            selectedCardOne.setBackgroundColor(Color.LTGRAY);
+                            selectedCardTwo.setBackgroundColor(Color.LTGRAY);
+                            // Clear selection
+                            selectedCardOne = null;
+                            selectedCardTwo = null;
+                            // Select new card
+                            selectedCardOne = cardArray[finalI][finalQ];
+                            selectedCardOne.setBackgroundColor(Color.YELLOW);
+                        }
+
+
+
+                    }
+                });
+            }
+        }
+
+    }
+
+    private boolean checkMatch(Button cardOne, Button cardTwo) {
+
+        for (int i = 0; i < matchCount; i++) {
+
+            if (matchArray[i][0].equals(cardOne) && matchArray[i][1].equals(cardTwo)) {
+                return true;
+            }
+            else if (matchArray[i][1].equals(cardOne) && matchArray[i][0].equals(cardTwo)) {
+                return true;
+            }
+
+        }
+
+        return false;
+
+    }
+
 
     private void generateCards() {
 
         int buttonCount = tableRowCount * tableColCount;
-        int matchCount = buttonCount / 2;
+        matchCount = buttonCount / 2;
 
         matchArray = new Button[ matchCount ][2];
         int matchCounter = 0;
@@ -62,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // Create a button for the row and column
                 cardArray[i][q] = new Button(this);
+                cardArray[i][q].setBackgroundColor(Color.LTGRAY);
 
                 // Pair that button with another
                 if (pairCounter > 1) {
